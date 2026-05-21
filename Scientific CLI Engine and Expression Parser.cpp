@@ -8,14 +8,14 @@ using namespace std;
 
 class calculator
 {
-private :
+private:
 	map <string, int> Variables;
 	//
 	map <char, short>precedence = { {'*',4},{'/',4} ,{'+',2} ,{ '-' ,2 } };
 	deque<string> Output;
 	stack<char> Operations;
 	//
-public :
+public:
 	calculator()
 	{
 		//for later
@@ -23,14 +23,29 @@ public :
 	string expression;
 	double Result = 0;
 
+	//Screens
+	void MainScreen()
+	{
+		system("cls");
+		cout << R"(    
+                                      ==================================================
+                                                    SCIENTIFIC CLI ENGINE   
+                                      ==================================================
+Commands:
+
+  help: Show help menu | history: Show calculation history | clear: Clear screen | exit: Exit program
+========================================================================================================================
+)";
 
 
+	}
 
 };
 
 
 int main()
 {
-
+	calculator c;
+	c.MainScreen();
 }
 
