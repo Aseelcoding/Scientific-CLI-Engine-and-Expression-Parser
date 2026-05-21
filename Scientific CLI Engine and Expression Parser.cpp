@@ -247,6 +247,50 @@ Commands:
 
 
 	}
+	void evaluate() 
+	{
+		for (int i = Output.size() - 1; i >= 0; i--)
+		{
+			string Result = "";
+
+			if (Output[i] == "+")
+			{
+				Result = to_string((stoi(Output[i + 1]) + stoi(Output[i + 2])));
+				Output.erase(Output.begin() + (i + 1), Output.begin() + (i + 3));
+				Output[i] = Result;
+				i = Output.size() - 1;
+			}
+			else if (Output[i] == "-")
+			{
+				Result = to_string((stoi(Output[i + 1]) - stoi(Output[i + 2])));
+				Output.erase(Output.begin() + (i + 1), Output.begin() + (i + 3));
+				Output[i] = Result;
+				i = Output.size() - 1;
+			}
+			else if (Output[i] == "*")
+			{
+				Result = to_string((stoi(Output[i + 1]) * stoi(Output[i + 2])));
+				Output.erase(Output.begin() + (i + 1), Output.begin() + (i + 3));
+				Output[i] = Result;
+				i = Output.size() - 1;
+			}
+			else if (Output[i] == "/")
+			{
+				Result = to_string((stoi(Output[i + 1]) / stoi(Output[i + 2])));
+				Output.erase(Output.begin() + (i + 1), Output.begin() + (i + 3));
+				Output[i] = Result;
+				i = Output.size() - 1;
+			}
+
+
+			if (Output.size() == 1)
+				break;
+
+		}
+
+		Result = stod(Output.front());
+
+	}
 
 	
 };
@@ -255,10 +299,14 @@ Commands:
 int main()
 {
 	calculator c;
-	string temp = "   2   +   8/ 2  *    2";
+	string temp = " 2+2";
 	c.TextCorrection(temp);
 	c.TokenizingText(temp);
 	c.PolishNotation();
+	c.evaluate();
+	double Result = c.Result;
+
+	cout<<endl << Result;
 	
 }
 
