@@ -1,9 +1,12 @@
 #include <iostream>
+#include <cctype>
 #include <map>
-#include <fstream>
-#include <string>
 #include <stack>
 #include <vector>
+#include <queue>
+#include <algorithm>
+#include<deque>
+#include <string>
 using namespace std;
 
 class calculator
@@ -176,14 +179,76 @@ Commands:
 		}
 
 	}
-	//Test
-	void PrintTokens() 
+	//
+	bool PolishNotation() 
 	{
-		for (string& st : Tokens) 
+		int count = Tokens.size() - 1;
+
+		while (!Tokens.empty())
 		{
-			cout << st;
+
+			if (all_of(Tokens[count].begin(), Tokens[count].end(), ::isdigit))
+			{
+				Output.push_front(Tokens[count]);
+
+			}
+			else if (Tokens[count] != "(" || Tokens[count] != ")")
+			{
+				if (Operations.empty())
+				{
+					auto f = precedence.find(Tokens[count][0]);
+					Operations.push(f->first);
+				}
+				else
+				{
+					auto inside = precedence.find(Operations.top());
+					auto out = precedence.find(Tokens[count][0]);
+
+
+					while (inside->second > out->second)
+					{
+						string temp = "";
+						temp = temp + Operations.top();
+						Operations.pop();
+						Output.push_front(temp);
+
+						if (!Operations.empty())
+						{
+							inside = precedence.find(Operations.top());
+
+						}
+						else { break; }
+					}
+					Operations.push(out->first);
+
+
+
+				}
+
+
+			}
+			else
+			{
+				cout << "Bad Text try again later  \n\n";
+				return false;
+			}
+
+
+			Tokens.erase(Tokens.begin() + count);
+			count--;
 		}
+		while (!Operations.empty())
+		{
+			string temp; temp = temp + Operations.top();
+			Output.push_front(temp);
+			Operations.pop();
+		}
+
+
+
 	}
+
+	
 };
 
 
@@ -193,6 +258,7 @@ int main()
 	string temp = "   2   +   8/ 2  *    2";
 	c.TextCorrection(temp);
 	c.TokenizingText(temp);
-	c.PrintTokens();
+	c.PolishNotation();
+	
 }
 
