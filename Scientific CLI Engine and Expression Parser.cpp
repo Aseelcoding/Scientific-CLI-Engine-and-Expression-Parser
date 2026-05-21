@@ -14,9 +14,9 @@ class calculator
 private:
 	map <string, int> Variables;
 	//
-	map <char, short>precedence = { {'*',4},{'/',4} ,{'+',2} ,{ '-' ,2 } };
+	map <string, short>precedence = { {"*",4},{"/",4} ,{"+",2} ,{"-" ,2} };
 	deque<string> Output;
-	stack<char> Operations;
+	stack<string> Operations;
 	vector<string> Tokens;
 	//
 public:
@@ -124,9 +124,9 @@ Commands:
 	void TextCorrection(string& temp)
 	{
 		string NewTemp = "";
-		for (char& ch : temp) 
-		{ 
-			if (ch!=' ')
+		for (char& ch : temp)
+		{
+			if (ch != ' ')
 			{
 				ch = tolower((unsigned char)ch);
 				NewTemp = NewTemp + ch;
@@ -135,7 +135,26 @@ Commands:
 		temp = NewTemp;
 	}
 	// //Analyize the enterd text
-	void TokenizingText(string temp) 
+	//My isDigitFunction
+	bool IsItNumber(const string& str)
+	{
+		bool hasDecimal = false;
+		for (char ch : str)
+		{
+			if (ch == '.')
+			{
+				if (hasDecimal) return false;
+				hasDecimal = true;
+			}
+			else if (!isdigit((unsigned char)ch))
+			{
+				return false;
+			}
+		}
+		return true;
+
+	}
+	void TokenizingText(string temp)
 	{
 		size_t Size = temp.size();
 		for (int i = 0; i < Size; i++)
@@ -143,24 +162,33 @@ Commands:
 			string Temp;
 			if (isdigit(temp[i]))
 			{
-				
+
 				for (int j = i; j < Size; j++)
 				{
 
-					if (isdigit(temp[j]))
+					if (isdigit(temp[j]) || temp[j] == '.')
 					{
 						Temp = Temp + temp[j];
 						if (j == (Size - 1))
 						{
-							Tokens.push_back(Temp);
-							i = j;
-							break;
+							if (IsItNumber(Temp))
+							{
+								Tokens.push_back(Temp);
+								i = j;
+								break;
+							}
+							else { return; }
 						}
 					}
 					else
 					{
 						i = j - 1;
-						Tokens.push_back(Temp);
+						if (IsItNumber(Temp))
+						{
+							Tokens.push_back(Temp);
+						}
+						else
+							return;
 
 
 						break;
@@ -171,7 +199,7 @@ Commands:
 			{
 
 
-			
+
 				Temp = Temp + temp[i];
 				Tokens.push_back(Temp);
 
@@ -180,15 +208,16 @@ Commands:
 
 	}
 	//
-	bool PolishNotation() 
+	bool PolishNotation()
 	{
 		int count = Tokens.size() - 1;
 
 		while (!Tokens.empty())
 		{
 
-			if (all_of(Tokens[count].begin(), Tokens[count].end(), ::isdigit))
+			if (IsItNumber(Tokens[count]))
 			{
+
 				Output.push_front(Tokens[count]);
 
 			}
@@ -196,22 +225,17 @@ Commands:
 			{
 				if (Operations.empty())
 				{
-					auto f = precedence.find(Tokens[count][0]);
+					auto f = precedence.find(Tokens[count]);
 					Operations.push(f->first);
 				}
 				else
 				{
 					auto inside = precedence.find(Operations.top());
-					auto out = precedence.find(Tokens[count][0]);
-
-
+					auto out = precedence.find(Tokens[count]);
 					while (inside->second > out->second)
 					{
-						string temp = "";
-						temp = temp + Operations.top();
+						Output.push_front(Operations.top());
 						Operations.pop();
-						Output.push_front(temp);
-
 						if (!Operations.empty())
 						{
 							inside = precedence.find(Operations.top());
@@ -220,9 +244,6 @@ Commands:
 						else { break; }
 					}
 					Operations.push(out->first);
-
-
-
 				}
 
 
@@ -239,15 +260,15 @@ Commands:
 		}
 		while (!Operations.empty())
 		{
-			string temp; temp = temp + Operations.top();
-			Output.push_front(temp);
+			Output.push_front(Operations.top());
 			Operations.pop();
 		}
 
 
-
+		return true;
 	}
-	void evaluate() 
+
+	void evaluate()
 	{
 		for (int i = Output.size() - 1; i >= 0; i--)
 		{
@@ -255,28 +276,28 @@ Commands:
 
 			if (Output[i] == "+")
 			{
-				Result = to_string((stoi(Output[i + 1]) + stoi(Output[i + 2])));
+				Result = to_string((stod(Output[i + 1]) + stod(Output[i + 2])));
 				Output.erase(Output.begin() + (i + 1), Output.begin() + (i + 3));
 				Output[i] = Result;
 				i = Output.size() - 1;
 			}
 			else if (Output[i] == "-")
 			{
-				Result = to_string((stoi(Output[i + 1]) - stoi(Output[i + 2])));
+				Result = to_string((stod(Output[i + 1]) - stod(Output[i + 2])));
 				Output.erase(Output.begin() + (i + 1), Output.begin() + (i + 3));
 				Output[i] = Result;
 				i = Output.size() - 1;
 			}
 			else if (Output[i] == "*")
 			{
-				Result = to_string((stoi(Output[i + 1]) * stoi(Output[i + 2])));
+				Result = to_string((stod(Output[i + 1]) * stod(Output[i + 2])));
 				Output.erase(Output.begin() + (i + 1), Output.begin() + (i + 3));
 				Output[i] = Result;
 				i = Output.size() - 1;
 			}
 			else if (Output[i] == "/")
 			{
-				Result = to_string((stoi(Output[i + 1]) / stoi(Output[i + 2])));
+				Result = to_string((stod(Output[i + 1]) / stod(Output[i + 2])));
 				Output.erase(Output.begin() + (i + 1), Output.begin() + (i + 3));
 				Output[i] = Result;
 				i = Output.size() - 1;
@@ -289,24 +310,24 @@ Commands:
 		}
 
 		Result = stod(Output.front());
-
 	}
 
-	
+
 };
 
 
 int main()
 {
 	calculator c;
-	string temp = " 2+2";
+	string temp = "2.5+2";
 	c.TextCorrection(temp);
 	c.TokenizingText(temp);
 	c.PolishNotation();
+
 	c.evaluate();
 	double Result = c.Result;
 
-	cout<<endl << Result;
-	
+	cout << endl << Result;
+
 }
 
