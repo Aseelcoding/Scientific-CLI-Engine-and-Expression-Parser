@@ -112,9 +112,22 @@ Commands:
 		Output.clear();
 		while (!Operations.empty()) {
 			Operations.pop();
-		
+
 		}
 
+	}
+	void TextCorrection(string& temp)
+	{
+		string NewTemp = "";
+		for (char& ch : temp) 
+		{ 
+			if (ch!=' ')
+			{
+				ch = tolower((unsigned char)ch);
+				NewTemp = NewTemp + ch;
+			}
+		}
+		temp = NewTemp;
 	}
 
 };
@@ -123,9 +136,8 @@ Commands:
 int main()
 {
 	calculator c;
-	c.HelpScreen();
-	c.ClearScreen();
-	system("pause");
-
+	string temp = "   2   +   8/ 2  *    2";
+	c.TextCorrection(temp);
+	cout << temp;
 }
 
