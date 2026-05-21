@@ -14,6 +14,7 @@ private:
 	map <char, short>precedence = { {'*',4},{'/',4} ,{'+',2} ,{ '-' ,2 } };
 	deque<string> Output;
 	stack<char> Operations;
+	vector<string> Tokens;
 	//
 public:
 	calculator()
@@ -114,6 +115,7 @@ Commands:
 			Operations.pop();
 
 		}
+		Tokens.clear();
 
 	}
 	void TextCorrection(string& temp)
@@ -129,7 +131,59 @@ Commands:
 		}
 		temp = NewTemp;
 	}
+	// //Analyize the enterd text
+	void TokenizingText(string temp) 
+	{
+		size_t Size = temp.size();
+		for (int i = 0; i < Size; i++)
+		{
+			string Temp;
+			if (isdigit(temp[i]))
+			{
+				
+				for (int j = i; j < Size; j++)
+				{
 
+					if (isdigit(temp[j]))
+					{
+						Temp = Temp + temp[j];
+						if (j == (Size - 1))
+						{
+							Tokens.push_back(Temp);
+							i = j;
+							break;
+						}
+					}
+					else
+					{
+						i = j - 1;
+						Tokens.push_back(Temp);
+
+
+						break;
+					}
+				}
+			}
+			else
+			{
+
+
+			
+				Temp = Temp + temp[i];
+				Tokens.push_back(Temp);
+
+			}
+		}
+
+	}
+	//Test
+	void PrintTokens() 
+	{
+		for (string& st : Tokens) 
+		{
+			cout << st;
+		}
+	}
 };
 
 
@@ -138,6 +192,7 @@ int main()
 	calculator c;
 	string temp = "   2   +   8/ 2  *    2";
 	c.TextCorrection(temp);
-	cout << temp;
+	c.TokenizingText(temp);
+	c.PrintTokens();
 }
 
