@@ -13,8 +13,17 @@ private :
 	//
 	map <char, short>precedence = { {'*',4},{'/',4} ,{'+',2} ,{ '-' ,2 } };
 	deque<string> Output;
-	stack<char> Op;
+	stack<char> Operations;
 	//
+public :
+	calculator()
+	{
+		//for later
+	}
+	string expression;
+	double Result = 0;
+
+
 
 
 };
