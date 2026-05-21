@@ -105,6 +105,18 @@ Commands:
 	void ClearScreen() {
 		system("cls");
 	}
+	void Reset()
+	{
+		this->expression = "";
+		this->Result = 0;
+		Output.clear();
+		while (!Operations.empty()) {
+			Operations.pop();
+		
+		}
+
+	}
+
 };
 
 
@@ -112,6 +124,8 @@ int main()
 {
 	calculator c;
 	c.HelpScreen();
+	c.ClearScreen();
 	system("pause");
+
 }
 
