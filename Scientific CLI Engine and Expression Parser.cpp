@@ -146,7 +146,7 @@ Commands:
 				if (hasDecimal) return false;
 				hasDecimal = true;
 			}
-			else if (!isdigit((unsigned char)ch))
+			else if (!isdigit((signed char)ch)&& !(ch=='-'||ch=='+'))
 			{
 				return false;
 			}
@@ -195,20 +195,71 @@ Commands:
 					}
 				}
 			}
-			else
+			else 
 			{
-
-
-
 				Temp = Temp + temp[i];
-				Tokens.push_back(Temp);
 
+				if (precedence.find(Temp) != precedence.end())
+				{
+					if ((Temp == "-" || Temp == "+") && (i == 0) || (Tokens.back() == "("))
+					{
+						for (int j = i+1; j < Size; j++)
+						{
+
+							if (isdigit(temp[j]) || temp[j] == '.')
+							{
+								Temp = Temp + temp[j];
+								if (j == (Size - 1))
+								{
+									if (IsItNumber(Temp))
+									{
+										Tokens.push_back(Temp);
+										i = j;
+										break;
+									}
+									else { return false; }
+								}
+							}
+							else
+							{
+							
+								if (IsItNumber(Temp))
+								{
+									i = j - 1;
+									
+								}
+								else
+									return false;
+
+								break;
+							
+							}
+						}
+						Tokens.push_back(Temp);
+					}
+					else if ((Temp != "-" && Temp != "+" && Temp!="(") && (i == 0) || (Tokens.back() == "("))
+					{
+						return false;
+					}
+					else
+					Tokens.push_back(Temp);
+				}
+				else
+					return false;
+
+				
 			}
 		}
 		return true;
 	}
 	//
-
+	void print() {
+	
+		for (string& s : Tokens) 
+		{
+			cout << s << endl;
+		}
+	}
 
 	bool PolishNotation()
 	{
@@ -348,11 +399,12 @@ Commands:
 int main()
 {
 	calculator c;
-	string temp = "2.5+2+(1+1+1*5)";
+	string temp = "-2.5+2.5+(1+1+1*5)";
 	c.TextCorrection(temp);
 	c.TokenizingText(temp);
+	c.print();
 	c.PolishNotation();
-
+	c.Print();
 	c.evaluate();
 	cout << c.Result;
 
