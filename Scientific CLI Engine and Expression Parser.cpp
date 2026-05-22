@@ -14,7 +14,7 @@ class calculator
 private:
 	map <string, int> Variables;
 	//
-	map <string, short>precedence = { {"*",4},{"/",4} ,{"+",2} ,{"-" ,2} };
+	map <string, short>precedence = { {"(",5}, { ")",5 }, {"*",4},{"/",4} ,{"+",2} ,{"-" ,2} };
 	deque<string> Output;
 	stack<string> Operations;
 	vector<string> Tokens;
@@ -154,7 +154,7 @@ Commands:
 		return true;
 
 	}
-	void TokenizingText(string temp)
+	bool TokenizingText(string temp)
 	{
 		size_t Size = temp.size();
 		for (int i = 0; i < Size; i++)
@@ -177,7 +177,7 @@ Commands:
 								i = j;
 								break;
 							}
-							else { return; }
+							else { return false; }
 						}
 					}
 					else
@@ -188,7 +188,7 @@ Commands:
 							Tokens.push_back(Temp);
 						}
 						else
-							return;
+							return false;
 
 
 						break;
@@ -205,12 +205,14 @@ Commands:
 
 			}
 		}
-
+		return true;
 	}
 	//
+
+
 	bool PolishNotation()
 	{
-		int count = Tokens.size() - 1;
+		int count = 0;
 
 		while (!Tokens.empty())
 		{
@@ -221,8 +223,9 @@ Commands:
 				Output.push_front(Tokens[count]);
 
 			}
-			else if (Tokens[count] != "(" || Tokens[count] != ")")
+			else if (precedence.find(Tokens[count]) != precedence.end())
 			{
+
 				if (Operations.empty())
 				{
 					auto f = precedence.find(Tokens[count]);
@@ -232,31 +235,48 @@ Commands:
 				{
 					auto inside = precedence.find(Operations.top());
 					auto out = precedence.find(Tokens[count]);
+
+					if (out->first == ")")
+					{
+						while (Operations.top() != "(")
+						{
+							Output.push_front(Operations.top());
+							Operations.pop();
+
+						}
+						Operations.pop();
+					}
 					while (inside->second > out->second)
 					{
-						Output.push_front(Operations.top());
-						Operations.pop();
-						if (!Operations.empty())
+						if (inside->first != "(" && out->first != ")")
 						{
-							inside = precedence.find(Operations.top());
+							Output.push_front(Operations.top());
+							Operations.pop();
+							if (!Operations.empty())
+							{
+								inside = precedence.find(Operations.top());
 
+							}
+							else { break; }
 						}
 						else { break; }
 					}
-					Operations.push(out->first);
+					if (out->first != ")")
+						Operations.push(out->first);
 				}
 
 
 			}
+
 			else
 			{
-				cout << "Bad Text try again later  \n\n";
+
 				return false;
 			}
 
 
 			Tokens.erase(Tokens.begin() + count);
-			count--;
+
 		}
 		while (!Operations.empty())
 		{
@@ -268,6 +288,15 @@ Commands:
 		return true;
 	}
 
+	void Print()
+	{
+
+		while (!Output.empty())
+		{
+			cout << Output.front() << endl;
+			Output.pop_front();
+		}
+	}
 	void evaluate()
 	{
 		for (int i = Output.size() - 1; i >= 0; i--)
@@ -319,15 +348,14 @@ Commands:
 int main()
 {
 	calculator c;
-	string temp = "2.5+2";
+	string temp = "2.5+2+(1+1+1*5)";
 	c.TextCorrection(temp);
 	c.TokenizingText(temp);
 	c.PolishNotation();
 
 	c.evaluate();
-	double Result = c.Result;
+	cout << c.Result;
 
-	cout << endl << Result;
 
 }
 
