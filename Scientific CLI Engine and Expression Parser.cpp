@@ -14,7 +14,7 @@ class calculator
 private:
 	map <string, int> Variables;
 	//
-	map <string, short>precedence = { {"(",5}, { ")",5 }, {"*",4},{"/",4} ,{"+",2} ,{"-" ,2} };
+	map <string, short>precedence = { {"(",5}, {")",5}, {"*",4},{"/",4} ,{"+",2} ,{"-" ,2}};
 	deque<string> Output;
 	stack<string> Operations;
 	vector<string> Tokens;
@@ -109,6 +109,13 @@ Commands:
 	void ClearScreen() {
 		system("cls");
 	}
+	void HistoryScreen()
+	{
+		system("cls");
+		cout << "History Screen will be here\n";
+
+	
+	}
 	void Reset()
 	{
 		this->expression = "";
@@ -133,6 +140,7 @@ Commands:
 			}
 		}
 		temp = NewTemp;
+		expression = temp;
 	}
 	// //Analyize the enterd text
 	//My isDigitFunction
@@ -173,55 +181,29 @@ Commands:
 		return hasDigit;
 	}
 	bool TokenizingText(string temp)
-
 	{
-
+		if (temp.empty())
+			return false;
 		size_t Size = temp.size();
-
 		for (int i = 0; i < Size; i++)
-
 		{
-
 			string Temp;
-
 			if (isdigit(temp[i]))
-
-			{
-
-
-
-				for (int j = i; j < Size; j++)
-
+			{	for (int j = i; j < Size; j++)
 				{
-
-
-
 					if (isdigit(temp[j]) || temp[j] == '.')
-
 					{
-
 						Temp = Temp + temp[j];
-
 						if (j == (Size - 1))
-
 						{
-
 							if (IsItNumber(Temp))
-
 							{
-
 								Tokens.push_back(Temp);
-
 								i = j;
-
 								break;
-
 							}
-
 							else { return false; }
-
 						}
-
 					}
 
 					else
@@ -252,17 +234,10 @@ Commands:
 				}
 
 			}
-
 			else
-
 			{
-
 				Temp = Temp + temp[i];
-
-
-
 				if (precedence.find(Temp) != precedence.end())
-
 				{
 
 					if ((Temp == "-" || Temp == "+") && (i == 0 || Tokens.back() == "("))
@@ -442,16 +417,6 @@ Commands:
 
 		return true;
 	}
-
-	void Print()
-	{
-
-		while (!Output.empty())
-		{
-			cout << Output.front();
-			Output.pop_front();
-		}
-	}
 	void evaluate()
 	{
 		for (int i = Output.size() - 1; i >= 0; i--)
@@ -499,18 +464,65 @@ Commands:
 
 };
 
-
-int main()
+void StartTheProgram() 
 {
 	calculator c;
-	string temp = "-2.5+2.5+1+1+1*5";
-	c.TextCorrection(temp);
-	c.TokenizingText(temp);
-	//c.PrintT();
-	c.PolishNotation();
+	string temp;
 
-	c.evaluate();
-	cout << c.Result;
+
+	do
+	{
+		c.MainScreen();
+		getline(cin, temp);
+		c.TextCorrection(temp);
+
+		if (temp == "help") 
+		{
+			c.HelpScreen();
+			system("pause");
+			StartTheProgram();
+		}
+		else if (temp == "history") 
+		{
+			c.HistoryScreen();
+			system("pause");
+			StartTheProgram();
+		}
+		else if (temp == "clear") 
+		{
+			c.ClearScreen();
+			StartTheProgram();
+		}
+
+
+
+		if (!c.TokenizingText(temp))
+		{
+			
+			cout << "Bad expression , try again \n\n";
+			system("pause");
+			StartTheProgram();
+		}
+		if (!c.PolishNotation()) 
+		{
+		
+			cout << "Bad expression , try again \n\n";
+			system("pause");
+			StartTheProgram();
+		}
+		c.evaluate();
+		cout << "Result : " << c.Result << endl;;
+		
+		system("pause");
+		StartTheProgram();
+
+	} while (temp != "exit");
+}
+int main()
+{
+	
+	
+	StartTheProgram();
 
 
 }
