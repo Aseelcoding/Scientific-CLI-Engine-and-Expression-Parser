@@ -138,128 +138,232 @@ Commands:
 	//My isDigitFunction
 	bool IsItNumber(const string& str)
 	{
+		if (str.empty())
+			return false;
+
 		bool hasDecimal = false;
-		for (char ch : str)
+		bool hasDigit = false;
+
+		for (int i = 0; i < str.size(); i++)
 		{
+			char ch = str[i];
+
 			if (ch == '.')
 			{
-				if (hasDecimal) return false;
+				if (hasDecimal)
+					return false;
+
 				hasDecimal = true;
 			}
-			else if (!isdigit((signed char)ch)&& !(ch=='-'||ch=='+'))
+			else if (ch == '+' || ch == '-')
+			{
+				if (i != 0)
+					return false;
+			}
+			else if (isdigit((unsigned char)ch))
+			{
+				hasDigit = true;
+			}
+			else
 			{
 				return false;
 			}
 		}
-		return true;
 
+		return hasDigit;
 	}
 	bool TokenizingText(string temp)
+
 	{
+
 		size_t Size = temp.size();
+
 		for (int i = 0; i < Size; i++)
+
 		{
+
 			string Temp;
+
 			if (isdigit(temp[i]))
+
 			{
 
+
+
 				for (int j = i; j < Size; j++)
+
 				{
 
+
+
 					if (isdigit(temp[j]) || temp[j] == '.')
+
 					{
+
 						Temp = Temp + temp[j];
+
 						if (j == (Size - 1))
+
 						{
+
 							if (IsItNumber(Temp))
+
 							{
+
 								Tokens.push_back(Temp);
+
 								i = j;
+
 								break;
+
 							}
+
 							else { return false; }
+
 						}
+
 					}
+
 					else
+
 					{
+
 						i = j - 1;
 						if (IsItNumber(Temp))
+
 						{
+
 							Tokens.push_back(Temp);
+
 						}
+
 						else
+
 							return false;
 
 
+
+
+
 						break;
+
 					}
+
 				}
+
 			}
-			else 
+
+			else
+
 			{
+
 				Temp = Temp + temp[i];
 
+
+
 				if (precedence.find(Temp) != precedence.end())
+
 				{
-					if ((Temp == "-" || Temp == "+") && (i == 0) || (Tokens.back() == "("))
+
+					if ((Temp == "-" || Temp == "+") && (i == 0 || Tokens.back() == "("))
+
 					{
-						for (int j = i+1; j < Size; j++)
+
+						for (int j = i + 1; j < Size; j++)
+
 						{
 
+
+
 							if (isdigit(temp[j]) || temp[j] == '.')
+
 							{
+
 								Temp = Temp + temp[j];
+
 								if (j == (Size - 1))
+
 								{
+								
+
 									if (IsItNumber(Temp))
+
 									{
-										Tokens.push_back(Temp);
 										i = j;
+										Tokens.push_back(Temp);
+
+								
+
 										break;
+
 									}
+
 									else { return false; }
+
 								}
+
 							}
+
 							else
+
 							{
-							
+
+
 								if (IsItNumber(Temp))
+
 								{
-									i = j - 1;
-									
+
+									i = j-1;
+
+								
 								}
+
 								else
+
 									return false;
 
+
+
 								break;
-							
+
+
 							}
+
 						}
+
 						Tokens.push_back(Temp);
+
 					}
-					else if ((Temp != "-" && Temp != "+" && Temp!="(") && (i == 0) || (Tokens.back() == "("))
+
+					else if ((Temp != "-" && Temp != "+" && Temp != "(") && (i == 0 || Tokens.back() == "("))
+
 					{
+
 						return false;
+
 					}
+
 					else
-					Tokens.push_back(Temp);
+
+						Tokens.push_back(Temp);
+
 				}
+
 				else
+
 					return false;
 
-				
+
+
+
 			}
+
 		}
+
 		return true;
+
 	}
 	//
-	void print() {
-	
-		for (string& s : Tokens) 
-		{
-			cout << s << endl;
-		}
-	}
 
 	bool PolishNotation()
 	{
@@ -344,7 +448,7 @@ Commands:
 
 		while (!Output.empty())
 		{
-			cout << Output.front() << endl;
+			cout << Output.front();
 			Output.pop_front();
 		}
 	}
@@ -399,12 +503,12 @@ Commands:
 int main()
 {
 	calculator c;
-	string temp = "-2.5+2.5+(1+1+1*5)";
+	string temp = "-2.5+2.5+1+1+1*5";
 	c.TextCorrection(temp);
 	c.TokenizingText(temp);
-	c.print();
+	//c.PrintT();
 	c.PolishNotation();
-	c.Print();
+
 	c.evaluate();
 	cout << c.Result;
 
