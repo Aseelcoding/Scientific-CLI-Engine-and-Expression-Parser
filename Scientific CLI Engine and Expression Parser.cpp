@@ -7,8 +7,10 @@
 #include <algorithm>
 #include<deque>
 #include <string>
+#include <fstream>
+#include <chrono>
+//CHisxtory.txt
 using namespace std;
-
 class calculator
 {
 private:
@@ -112,7 +114,13 @@ Commands:
 	void HistoryScreen()
 	{
 		system("cls");
-		cout << "History Screen will be here\n";
+		cout <<
+			R"(
+==================================================
+                  HISTORY SCREEN
+==================================================
+------------------------------------------------------------------------------------------------------------------------)" << endl;
+		ReadFromFile();
 
 	
 	}
@@ -461,9 +469,30 @@ Commands:
 		Result = stod(Output.front());
 	}
 
+	//
+	void SaveToFile() 
+	{
+		std::ofstream outFile("CHistory.txt", std::ios::out | std::ios::app);
+		if (outFile.is_open()) {
+			outFile << chrono::system_clock::now<<"  " << this->expression <<endl;
+			outFile.close(); // Always close your files
+		}
 
+
+	}
+	void ReadFromFile() 
+	{
+		std::ifstream inFile("CHistory.txt");
+		std::string line;
+		if (inFile.is_open()) {
+			while (std::getline(inFile, line)) 
+			{
+				std::cout << line << std::endl;
+			}
+			inFile.close();
+		}
+	}
 };
-
 void StartTheProgram() 
 {
 	calculator c;
@@ -472,6 +501,7 @@ void StartTheProgram()
 
 	do
 	{
+		c.Reset();
 		c.MainScreen();
 		getline(cin, temp);
 		c.TextCorrection(temp);
@@ -493,9 +523,6 @@ void StartTheProgram()
 			c.ClearScreen();
 			StartTheProgram();
 		}
-
-
-
 		if (!c.TokenizingText(temp))
 		{
 			
@@ -510,20 +537,21 @@ void StartTheProgram()
 			system("pause");
 			StartTheProgram();
 		}
+
+
 		c.evaluate();
 		cout << "Result : " << c.Result << endl;;
-		
+		c.SaveToFile();
 		system("pause");
 		StartTheProgram();
 
 	} while (temp != "exit");
+
 }
 int main()
 {
 	
-	
 	StartTheProgram();
-
 
 }
 
