@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <cctype>
 #include <map>
@@ -473,8 +474,11 @@ Commands:
 	void SaveToFile() 
 	{
 		std::ofstream outFile("CHistory.txt", std::ios::out | std::ios::app);
-		if (outFile.is_open()) {
-			outFile << chrono::system_clock::now<<"  " << this->expression <<endl;
+		if (outFile.is_open()) 
+		{
+			auto Now = chrono::system_clock::now();
+		time_t currentTime = chrono::system_clock::to_time_t(Now);
+			outFile << ctime(&currentTime) <<"  " << this->expression <<endl;
 			outFile.close(); // Always close your files
 		}
 
