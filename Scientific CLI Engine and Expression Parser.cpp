@@ -510,32 +510,32 @@ void StartTheProgram()
 		{
 			c.HelpScreen();
 			system("pause");
-			StartTheProgram();
+			continue;
 		}
 		else if (temp == "history") 
 		{
 			c.HistoryScreen();
 			system("pause");
-			StartTheProgram();
+			continue;
 		}
 		else if (temp == "clear") 
 		{
 			c.ClearScreen();
-			StartTheProgram();
+			continue;
 		}
 		if (!c.TokenizingText(temp))
 		{
 			
 			cout << "Bad expression , try again \n\n";
 			system("pause");
-			StartTheProgram();
+			continue;
 		}
 		if (!c.PolishNotation()) 
 		{
 		
 			cout << "Bad expression , try again \n\n";
 			system("pause");
-			StartTheProgram();
+			continue;
 		}
 
 
@@ -543,7 +543,7 @@ void StartTheProgram()
 		cout << "Result : " << c.Result << endl;;
 		c.SaveToFile();
 		system("pause");
-		StartTheProgram();
+		continue;
 
 	} while (temp != "exit");
 
