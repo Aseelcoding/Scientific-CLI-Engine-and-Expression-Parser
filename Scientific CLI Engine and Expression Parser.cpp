@@ -15,7 +15,15 @@ using namespace std;
 class calculator
 {
 private:
-	map <string, int> Variables;
+	map <string, double> Variables = {
+	{"a",0}, {"b",0}, {"c",0}, {"d",0}, {"e",0},
+	{"f",0}, {"g",0}, {"h",0}, {"i",0}, {"j",0},
+	{"k",0}, {"l",0}, {"m",0}, {"n",0}, {"o",0},
+	{"p",0}, {"q",0}, {"r",0}, {"s",0}, {"t",0},
+	{"u",0}, {"v",0}, {"w",0}, {"x",0}, {"y",0},
+	{"z",0}
+	};
+
 	//
 	map <string, short>precedence = { {"(",5}, {")",5}, {"*",4},{"/",4} ,{"+",2} ,{"-" ,2}};
 	deque<string> Output;
@@ -189,10 +197,36 @@ Commands:
 
 		return hasDigit;
 	}
-	bool TokenizingText(string temp)
+	bool SetVar(string temp) 
+	{
+		if (temp.size() <= 2)
+			return false;
+
+		string Temp;
+		Temp = Temp + temp[0];
+		if (Variables.find(Temp) != Variables.end()) 
+		{
+			string Num;
+			for (int i = 2; i < temp.size(); i++) 
+			{
+				
+				Num = Num + temp[i];
+				if (!IsItNumber(Num))
+				{
+					return false;
+				}
+				
+			}
+			auto f = Variables.find(Temp);
+			f->second = stod(Num);
+			return true;
+		}
+		return true;
+	}
+	string TokenizingText(string temp)
 	{
 		if (temp.empty())
-			return false;
+			return "false";
 		size_t Size = temp.size();
 		for (int i = 0; i < Size; i++)
 		{
@@ -211,7 +245,7 @@ Commands:
 								i = j;
 								break;
 							}
-							else { return false; }
+							else { return "false"; }
 						}
 					}
 
@@ -230,7 +264,7 @@ Commands:
 
 						else
 
-							return false;
+							return "false";
 
 
 
@@ -282,7 +316,7 @@ Commands:
 
 									}
 
-									else { return false; }
+									else { return "false"; }
 
 								}
 
@@ -304,7 +338,7 @@ Commands:
 
 								else
 
-									return false;
+									return "false";
 
 
 
@@ -323,7 +357,7 @@ Commands:
 
 					{
 
-						return false;
+						return "false";
 
 					}
 
@@ -333,9 +367,19 @@ Commands:
 
 				}
 
+				else if ((Variables.find(Temp) != Variables.end() ))
+				{
+					auto f = Variables.find(Temp);
+					if (i + 2 >= Size)
+						return "false";
+					Temp = "";
+					Temp = Temp + to_string(f->second);
+					Tokens.push_back(Temp);
+
+				}
 				else
 
-					return false;
+					return "false";
 
 
 
@@ -344,11 +388,11 @@ Commands:
 
 		}
 
-		return true;
+		return "true";
 
 	}
 	//
-
+	
 	bool PolishNotation()
 	{
 		int count = 0;
@@ -501,7 +545,7 @@ void StartTheProgram()
 {
 	calculator c;
 	string temp;
-
+	string temp2;
 
 	do
 	{
@@ -509,13 +553,14 @@ void StartTheProgram()
 		c.MainScreen();
 		getline(cin, temp);
 		c.TextCorrection(temp);
-
+		
 		if (temp == "help") 
 		{
 			c.HelpScreen();
 			system("pause");
 			continue;
 		}
+		else if (temp == "exit") { continue; }
 		else if (temp == "history") 
 		{
 			c.HistoryScreen();
@@ -527,10 +572,33 @@ void StartTheProgram()
 			c.ClearScreen();
 			continue;
 		}
-		if (!c.TokenizingText(temp))
+		else if ((!isdigit(temp[0]) &&temp[1]=='='))
+		{
+			if (c.SetVar(temp)) 
+			{
+				cout << "var Saved \n\n";
+				system("pause");
+				continue;
+			}
+			else {
+				cout << "Bad expression , try again \n\n";
+				system("pause");
+				continue;
+			}
+
+		}
+		temp2 = c.TokenizingText(temp);
+	
+		if (temp2 =="false")
 		{
 			
 			cout << "Bad expression , try again \n\n";
+			system("pause");
+			continue;
+		}
+		else if (temp2 == "var")
+		{
+			cout << "var saved ! \n\n";
 			system("pause");
 			continue;
 		}
